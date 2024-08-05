@@ -6,6 +6,8 @@ pool:
 
 stages:
 - stage: Build
+  variables:
+  - template: variables.yml
   jobs:
   - job: BuildJob
     displayName: 'Build Job'
@@ -38,7 +40,7 @@ stages:
       displayName: 'Publish Artifact'
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)' 
-        artifactName: 'myWebsite'
+        artifactName: $(app-name)
 
     - script: |
         echo Add other tasks to build, test, and deploy your project.
@@ -46,13 +48,15 @@ stages:
       displayName: 'Run a multi-line script'
 
 - stage: Deploy
+  variables:
+  - template: variables.yml
   dependsOn: Build
   jobs:
   - job: DeployJob
     displayName: 'Deploy Job'
     steps:
     - download: current
-      artifact: myWebsite
+      artifact: $(app-name)
     - task: DotNetCoreCLI@2
       displayName: 'Publish'
       inputs:
